@@ -150,25 +150,10 @@ public class NQueens extends Remoteable {
             }
         }
         countSolutions.removeAll(Collections.singleton(null));
-        /*for (int t = 0; t < countSolutions.size(); t++) {
-            if (countSolutions.get(t) != null) {
-                Log.i("qqq", Arrays.toString(countSolutions.get(t)[0]));
-                Log.i("qqq", Arrays.toString(countSolutions.get(t)[1]));
-                Log.i("qqq", Arrays.toString(countSolutions.get(t)[2]));
-                Log.i("qqq", Arrays.toString(countSolutions.get(t)[3]));
-//                break;
-            }
-        }*/
 
         Log.i(TAG, "Found " + countSolutions.size() + " solutions.");
 
-//        Log.i("qqq", Arrays.toString(result_board.get(0)[0]));
-//        Log.i("qqq", Arrays.toString(result_board.get(0)[1]));
-//        Log.i("qqq", Arrays.toString(result_board.get(0)[2]));
-//        Log.i("qqq", Arrays.toString(result_board.get(0)[3]));
-
         return countSolutions;
-//        return new int[][]{{1, 0, 1, 0, 1}, {0, 1, 0, 1, 0}, {1, 0, 1, 0, 1}, {0, 1, 0, 1, 0}, {1, 0, 1, 0, 1}};
     }
 
     /**
@@ -197,13 +182,6 @@ public class NQueens extends Remoteable {
 
         if (isSolution(board)) {
             printBoard(board);
-
-
-            //this part is working
-//            Log.i("qqq", Arrays.toString(board[0]));
-//            Log.i("qqq", Arrays.toString(board[1]));
-//            Log.i("qqq", Arrays.toString(board[2]));
-//            Log.i("qqq", Arrays.toString(board[3]));
             return cloneArray(board);
         }
 

@@ -274,14 +274,9 @@ public class DemoActivity extends Activity implements DFE.DfeCallback {
                 nQueensRemoteDurText.setText(String.format(Locale.ENGLISH, "%.2f", nQueensRemoteTotDur / nQueensRemoteNr / 1000000));
             }
 
-
-//            Log.i("qqq", Arrays.toString(result_board.get(0)[0]));
-//            Log.i("qqq", Arrays.toString(result_board.get(0)[1]));
-//            Log.i("qqq", Arrays.toString(result_board.get(0)[2]));
-//            Log.i("qqq", Arrays.toString(result_board.get(0)[3]));
-
             Intent i = new Intent(DemoActivity.this, Solution.class);
             i.putExtra("solution", result_board);
+            i.putExtra("N", nrQueens);
             startActivity(i);
 
         }
