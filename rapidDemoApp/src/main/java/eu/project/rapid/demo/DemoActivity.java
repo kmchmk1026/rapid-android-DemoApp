@@ -17,6 +17,7 @@ package eu.project.rapid.demo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +31,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -41,6 +45,8 @@ import eu.project.rapid.gvirtus.MatrixMul;
 import eu.project.rapid.queens.NQueens;
 import eu.project.rapid.sudoku.Sudoku;
 import eu.project.rapid.synthBenchmark.JniTest;
+
+import static org.spongycastle.asn1.ua.DSTU4145NamedCurves.params;
 
 /**
  * The class that handles configuration parameters and starts the offloading process.
@@ -222,7 +228,7 @@ public class DemoActivity extends Activity implements DFE.DfeCallback {
         new NQueensTask().execute();
     }
 
-    private class NQueensTask extends AsyncTask<Void, Void, Integer> {
+    private class NQueensTask extends AsyncTask<Void, Void, ArrayList<byte[][]>> {
         int nrQueens;
         Spinner nrQueensSpinner = (Spinner) findViewById(R.id.spinnerNrQueens);
         // Show a spinning dialog while solving the puzzle
@@ -239,17 +245,18 @@ public class DemoActivity extends Activity implements DFE.DfeCallback {
         }
 
         @Override
-        protected Integer doInBackground(Void... params) {
+        protected ArrayList<byte[][]> doInBackground(Void... params) {
             NQueens puzzle = new NQueens(dfe, nrVMs);
             return puzzle.solveNQueens(nrQueens);
         }
 
         @Override
-        protected void onPostExecute(Integer result) {
+        protected void onPostExecute(ArrayList<byte[][]> result_board) {
             Log.i(TAG, "Finished execution");
             if (pd != null) {
                 pd.dismiss();
             }
+            int result = result_board.size();
 
             String methodName = "localSolveNQueens";
             Log.i(TAG, nrQueens + "-Queens solved, solutions: " + result);
@@ -266,6 +273,17 @@ public class DemoActivity extends Activity implements DFE.DfeCallback {
                 nQueensRemoteTotDur += dfe.getLastExecDuration(getPackageName(), methodName);
                 nQueensRemoteDurText.setText(String.format(Locale.ENGLISH, "%.2f", nQueensRemoteTotDur / nQueensRemoteNr / 1000000));
             }
+
+
+//            Log.i("qqq", Arrays.toString(result_board.get(0)[0]));
+//            Log.i("qqq", Arrays.toString(result_board.get(0)[1]));
+//            Log.i("qqq", Arrays.toString(result_board.get(0)[2]));
+//            Log.i("qqq", Arrays.toString(result_board.get(0)[3]));
+
+            Intent i = new Intent(DemoActivity.this, Solution.class);
+            i.putExtra("solution", result_board);
+            startActivity(i);
+
         }
     }
 
@@ -287,7 +305,7 @@ public class DemoActivity extends Activity implements DFE.DfeCallback {
                         NQueens puzzle = new NQueens(dfe, nrVMs);
                         int nrQueens = 4 + r.nextInt(4);
                         Log.v(Thread.currentThread().getName(), "Started " + nrQueens + "-queens");
-                        int result = puzzle.solveNQueens(nrQueens);
+                        List<byte[][]> result = puzzle.solveNQueens(nrQueens);
                         Log.v(Thread.currentThread().getName(), "Finished " + nrQueens + "-queens, " + result + " solutions");
                     }
                 }).start();

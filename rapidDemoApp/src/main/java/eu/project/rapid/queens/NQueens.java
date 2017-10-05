@@ -18,6 +18,10 @@ package eu.project.rapid.queens;
 import android.util.Log;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import eu.project.rapid.ac.DFE;
 import eu.project.rapid.ac.Remote;
@@ -31,9 +35,10 @@ public class NQueens extends Remoteable {
     private int N = 8;
     private int nrVMs;
     private transient DFE dfe;
+//    private ArrayList<byte[][]> result_board = new ArrayList<>();
 
     /**
-     * @param dfe      The dfe taking care of the execution.
+     * @param dfe   The dfe taking care of the execution.
      * @param nrVMs In case of remote execution specify the number of VMs needed.
      */
     public NQueens(DFE dfe, int nrVMs) {
@@ -59,16 +64,16 @@ public class NQueens extends Remoteable {
      * @param N The number of queens
      * @return The number of solutions found
      */
-    public int solveNQueens(int N) {
+    public ArrayList<byte[][]> solveNQueens(int N) {
         this.N = N;
         Method toExecute;
         Class<?>[] paramTypes = {int.class};
         Object[] paramValues = {N};
 
-        int result = 0;
+        ArrayList<byte[][]> result = new ArrayList<>();
         try {
             toExecute = this.getClass().getDeclaredMethod("localSolveNQueens", paramTypes);
-            result = (Integer) dfe.execute(toExecute, paramValues, this);
+            result = (ArrayList<byte[][]>) dfe.execute(toExecute, paramValues, this);
         } catch (SecurityException e) {
             // Should never get here
             e.printStackTrace();
@@ -84,9 +89,9 @@ public class NQueens extends Remoteable {
     }
 
     @Remote
-    public int localSolveNQueens(int N) {
+    public ArrayList<byte[][]> localSolveNQueens(int N) {
 
-        int countSolutions = 0;
+        ArrayList<byte[][]> countSolutions = new ArrayList<>();
 
         byte[][] board = new byte[N][N];
 
@@ -116,26 +121,26 @@ public class NQueens extends Remoteable {
                 for (int k = 0; k < N; k++) {
                     for (int l = 0; l < N; l++) {
                         if (N == 4) {
-                            countSolutions += setAndCheckBoard(board, i, j, k, l);
+                            countSolutions.add(setAndCheckBoard(board, i, j, k, l));
                             continue;
                         }
                         for (int m = 0; m < N; m++) {
                             if (N == 5) {
-                                countSolutions += setAndCheckBoard(board, i, j, k, l, m);
+                                countSolutions.add(setAndCheckBoard(board, i, j, k, l, m));
                                 continue;
                             }
                             for (int n = 0; n < N; n++) {
                                 if (N == 6) {
-                                    countSolutions += setAndCheckBoard(board, i, j, k, l, m, n);
+                                    countSolutions.add(setAndCheckBoard(board, i, j, k, l, m, n));
                                     continue;
                                 }
                                 for (int o = 0; o < N; o++) {
                                     if (N == 7) {
-                                        countSolutions += setAndCheckBoard(board, i, j, k, l, m, n, o);
+                                        countSolutions.add(setAndCheckBoard(board, i, j, k, l, m, n, o));
                                         continue;
                                     }
                                     for (int p = 0; p < N; p++) {
-                                        countSolutions += setAndCheckBoard(board, i, j, k, l, m, n, o, p);
+                                        countSolutions.add(setAndCheckBoard(board, i, j, k, l, m, n, o, p));
                                     }
                                 }
                             }
@@ -144,10 +149,26 @@ public class NQueens extends Remoteable {
                 }
             }
         }
+        countSolutions.removeAll(Collections.singleton(null));
+        /*for (int t = 0; t < countSolutions.size(); t++) {
+            if (countSolutions.get(t) != null) {
+                Log.i("qqq", Arrays.toString(countSolutions.get(t)[0]));
+                Log.i("qqq", Arrays.toString(countSolutions.get(t)[1]));
+                Log.i("qqq", Arrays.toString(countSolutions.get(t)[2]));
+                Log.i("qqq", Arrays.toString(countSolutions.get(t)[3]));
+//                break;
+            }
+        }*/
 
-        Log.i(TAG, "Found " + countSolutions + " solutions.");
+        Log.i(TAG, "Found " + countSolutions.size() + " solutions.");
+
+//        Log.i("qqq", Arrays.toString(result_board.get(0)[0]));
+//        Log.i("qqq", Arrays.toString(result_board.get(0)[1]));
+//        Log.i("qqq", Arrays.toString(result_board.get(0)[2]));
+//        Log.i("qqq", Arrays.toString(result_board.get(0)[3]));
 
         return countSolutions;
+//        return new int[][]{{1, 0, 1, 0, 1}, {0, 1, 0, 1, 0}, {1, 0, 1, 0, 1}, {0, 1, 0, 1, 0}, {1, 0, 1, 0, 1}};
     }
 
     /**
@@ -167,17 +188,36 @@ public class NQueens extends Remoteable {
         return solutions;
     }
 
-    private int setAndCheckBoard(byte[][] board, int... cols) {
+    private byte[][] setAndCheckBoard(byte[][] board, int... cols) {
 
         clearBoard(board);
 
         for (int i = 0; i < N; i++)
             board[i][cols[i]] = 1;
 
-        if (isSolution(board))
-            return 1;
+        if (isSolution(board)) {
+            printBoard(board);
 
-        return 0;
+
+            //this part is working
+//            Log.i("qqq", Arrays.toString(board[0]));
+//            Log.i("qqq", Arrays.toString(board[1]));
+//            Log.i("qqq", Arrays.toString(board[2]));
+//            Log.i("qqq", Arrays.toString(board[3]));
+            return cloneArray(board);
+        }
+
+        return null;
+    }
+
+
+    private byte[][] cloneArray(byte[][] src) {
+        int length = src.length;
+        byte[][] target = new byte[length][src[0].length];
+        for (int i = 0; i < length; i++) {
+            System.arraycopy(src[i], 0, target[i], 0, src[i].length);
+        }
+        return target;
     }
 
     private void clearBoard(byte[][] board) {
@@ -250,7 +290,7 @@ public class NQueens extends Remoteable {
             }
             Log.i(TAG, row.toString());
         }
-        Log.i(TAG, "\n");
+        Log.i(TAG, "----------------");
     }
 
     public void setNumberOfClones(int nrClones) {

@@ -15,11 +15,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-            useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-        }
         release {
             minifyEnabled false
             useProguard false
@@ -47,4 +42,5 @@ dependencies {
     compile project(':rapid-gvirtus4a')
     compile files('libs/core-1.51.0.0.jar')
     compile files('libs/prov-1.51.0.0.jar')
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
