@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -78,10 +79,15 @@ public class Solution extends AppCompatActivity {
             table.addView(r);
             for (int x = 0; x < N; x++) {
                 final int col = x;
-                final Button b = new Button(this);
+                final ImageButton b = new ImageButton(this);
                 b.setEnabled(true);
-                if (result_board.get(currentSolution)[row][col] == 1)
-                    b.setBackgroundColor(Color.RED);
+                if (result_board.get(currentSolution)[row][col] == 1) {
+//                    b.setBackgroundColor(Color.RED);
+                    b.setImageResource(R.drawable.queen);
+                }
+                else{
+                    b.setImageResource(R.drawable.blank);
+                }
                 r.addView(b);
             }
         }
